@@ -1,20 +1,16 @@
 document.getElementById('table-select').addEventListener('change', function() {
     const selectedTable = this.value;
 
-    // Esconder todas as tabelas
     document.querySelectorAll('.table-container > .table-scroll > div[id^="table"]').forEach(table => {
         table.style.display = 'none';
     });
 
-    // Mostrar a tabela selecionada
     document.getElementById(selectedTable).style.display = 'block';
 });
 
-// Exibir apenas a tabela 1 por padrão
 document.getElementById('table1').style.display = 'block';
 document.getElementById('table2').style.display = 'none';
 
-// Função de pesquisa
 function filterTable() {
     const searchInput = document.getElementById('search-input').value.toLowerCase();
     const tableRows = document.querySelectorAll('#table1 tr:not(.table-title), #table2 tr:not(.table-title)');
@@ -34,22 +30,21 @@ function filterTable() {
     });
 }
 
-// Adiciona o evento de entrada para o campo de pesquisa
 document.getElementById('search-input').addEventListener('input', filterTable);
 
 let selectedRow = null; 
 let selectedId = null;
 let selectedUserData = null;
-let selectedUserType = null; // Para armazenar se o selecionado é um usuário ou lojista
+let selectedUserType = null; 
 
-// Função para buscar lojistas da rota e adicionar na tabela
+
 async function fetchLojistas() {
     try {
         const response = await fetch('http://localhost:4000/lojistas');
         const lojistas = await response.json();
 
         const lojistasTbody = document.getElementById('lojistas-tbody');
-        lojistasTbody.innerHTML = ''; // Limpa a tabela antes de preencher
+        lojistasTbody.innerHTML = ''; 
 
         lojistas.forEach(lojista => {
             const row = document.createElement('tr');
@@ -71,8 +66,7 @@ async function fetchLojistas() {
                 <td>${lojista.email}</td>
             `;
 
-            // Adiciona o evento de clique à linha
-            row.addEventListener('click', () => handleLojistaRowClick(row, lojista)); // Passa o objeto lojista completo
+            row.addEventListener('click', () => handleLojistaRowClick(row, lojista)); 
             lojistasTbody.appendChild(row);
         });
     } catch (error) {
@@ -80,25 +74,22 @@ async function fetchLojistas() {
     }
 }
 
-// Função para lidar com o clique na linha do lojista
-function handleLojistaRowClick(row, lojista) {
-    selectedUserData = lojista; // Armazena os dados do lojista selecionado
-    selectedId = lojista.id;
-    selectedUserType = 'lojista'; // Define o tipo selecionado como lojista
 
-    // Remove a classe 'selected-row' da linha anteriormente selecionada
+function handleLojistaRowClick(row, lojista) {
+    selectedUserData = lojista; 
+    selectedId = lojista.id;
+    selectedUserType = 'lojista'; 
+
+
     if (selectedRow) {
-        selectedRow.classList.remove('selected-row'); // Remove a classe
+        selectedRow.classList.remove('selected-row');
     }
 
-    // Adiciona a classe 'selected-row' à linha atual
     row.classList.add('selected-row');
     selectedRow = row;
 
-    // Preenche os dados do lojista no modal
     fillModalWithData(lojista);
 
-    // Abre o modal
     document.getElementById('modal').style.display = 'block';
 
     document.getElementById('editar-btn').disabled = false;
@@ -107,7 +98,7 @@ function handleLojistaRowClick(row, lojista) {
     console.log(`ID do lojista selecionado: ${selectedId}`);
 }
 
-// Função para preencher o modal com os dados do usuário ou lojista
+
 function fillModalWithData(userData) {
     document.getElementById('user-details').innerHTML = `
         <label>ID:</label>
@@ -149,14 +140,14 @@ function fillModalWithData(userData) {
     `;
 }
 
-// Função para buscar usuários
+
 async function fetchUsuarios() {
     try {
         const response = await fetch('http://localhost:4000/usuarios');
         const usuarios = await response.json();
 
         const usuariosTbody = document.getElementById('usuarios-tbody');
-        usuariosTbody.innerHTML = ''; // Limpa a tabela antes de preencher
+        usuariosTbody.innerHTML = ''; 
 
         usuarios.forEach(usuario => {
             const row = document.createElement('tr');
@@ -173,8 +164,8 @@ async function fetchUsuarios() {
                 <td>${usuario.email}</td>
             `;
 
-            // Adiciona o evento de clique à linha
-            row.addEventListener('click', () => handleRowClick(row, usuario)); // Passa o objeto usuario completo
+            
+            row.addEventListener('click', () => handleRowClick(row, usuario));
             usuariosTbody.appendChild(row);
         });
     } catch (error) {
@@ -182,36 +173,32 @@ async function fetchUsuarios() {
     }
 }
 
-// Função para lidar com o clique na linha do usuário
-function handleRowClick(row, usuario) {
-    selectedUserData = usuario; // Armazena os dados do usuário selecionado
-    selectedId = usuario.id;
-    selectedUserType = 'usuario'; // Define o tipo selecionado como usuário
 
-    // Remove a classe 'selected-row' da linha anteriormente selecionada
+function handleRowClick(row, usuario) {
+    selectedUserData = usuario; 
+    selectedId = usuario.id;
+    selectedUserType = 'usuario'; 
+
     if (selectedRow) {
-        selectedRow.classList.remove('selected-row'); // Remove a classe
+        selectedRow.classList.remove('selected-row');
     }
 
-    // Adiciona a classe 'selected-row' à linha atual
     row.classList.add('selected-row');
     selectedRow = row;
 
-    // Preenche os dados do usuário no modal
     fillModalWithData(usuario);
 
-    // Abre o modal
+
     document.getElementById('modal').style.display = 'block';
 
     console.log(`ID selecionado: ${selectedId}`);
 }
 
-// Fecha o modal quando o botão de fechar é clicado
 document.querySelector('.close-button').addEventListener('click', () => {
     document.getElementById('modal').style.display = 'none';
 });
 
-// Fecha o modal ao clicar fora do conteúdo do modal
+
 window.addEventListener('click', (event) => {
     const modal = document.getElementById('modal');
     if (event.target === modal) {
@@ -219,7 +206,7 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// Funções dos botões de banir, deletar e editar
+
 document.getElementById('ban-btn').addEventListener('click', () => {
     if (selectedId) {
         alert(`Banir usuário com ID: ${selectedId}`);
@@ -235,12 +222,12 @@ document.getElementById('delete-btn').addEventListener('click', async () => {
         const response = await fetch(route, { method: 'DELETE' });
         if (response.ok) {
             alert(`Usuário/lojista deletado com sucesso.`);
-            fetchUsuarios(); // Atualiza a lista de usuários
-            fetchLojistas(); // Atualiza a lista de lojistas
-            selectedRow.classList.remove('selected-row'); // Remove a classe de seleção da linha
-            selectedRow = null; // Reseta a linha selecionada
-            selectedUserData = null; // Reseta os dados do usuário selecionado
-            selectedId = null; // Reseta o ID do usuário selecionado
+            fetchUsuarios();
+            fetchLojistas(); 
+            selectedRow.classList.remove('selected-row'); 
+            selectedRow = null;
+            selectedUserData = null;
+            selectedId = null;
         } else {
             alert(`Erro ao deletar ${selectedUserType}.`);
         }
@@ -281,9 +268,9 @@ document.getElementById('editar-btn').addEventListener('click', async () => {
 
         if (response.ok) {
             alert(`Dados do ${selectedUserType} atualizados com sucesso.`);
-            fetchUsuarios(); // Atualiza a lista de usuários
-            fetchLojistas(); // Atualiza a lista de lojistas
-            document.getElementById('modal').style.display = 'none'; // Fecha o modal
+            fetchUsuarios();
+            fetchLojistas();
+            document.getElementById('modal').style.display = 'none';
         } else {
             alert(`Erro ao atualizar dados do ${selectedUserType}.`);
         }
